@@ -66,6 +66,7 @@ module FloppyBox(
     wire [6:0]box_y_wire;
     wire flying_wire;
     box_register box_reg(
+        .game_tick_clock(CLOCK_50),// Temp
         .tap(1'b0), // Temp
         .flying(flying_wire),
         .y_coordinate(box_y_wire)
