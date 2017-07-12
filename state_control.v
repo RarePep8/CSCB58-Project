@@ -60,7 +60,6 @@ module state_control(
             WAIT_GAME_OVER: begin
 
                 end
-
         // default:    // don't need default since we already made sure all of our outputs were assigned a value at the start of the always block
         endcase
     end // enable_signals

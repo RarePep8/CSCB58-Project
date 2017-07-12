@@ -78,7 +78,7 @@ module FloppyBox(
         .draw_box(draw_box_wire)
 		);
 
-	datapath data(
+	painter p(
         .clk(CLOCK_50),
         .draw_box(draw_box_wire),
         .box_y(box_y_wire),
