@@ -4,7 +4,7 @@ module box_register( // A register for holding and manipulating information abou
 	output flying, 
 	output [6:0] y_coordinate 
 	);
-    input CLOCK_50;
+
 	reg [5:0] current_state, next_state; 
 	reg[3:0] velocity = 4'd0;
 	reg [6:0] current_y_coordinate = 7'd60;
@@ -20,38 +20,28 @@ module box_register( // A register for holding and manipulating information abou
 	always@(*)
 	begin: state_table
 		case (current_state)
-			FALLING: next_state =  (velocity > -4'd10) ? FALLING_TO_FLYING : FALLING; // 
+			FALLING: next_state = FALLING;//(velocity > -4'd10) ? FALLING_TO_FLYING : FALLING;  
             FALLING_TO_FLYING: next_state = (velocity <= 4'd10 && velocity >= -4'd10) ? FALLING_TO_FLYING : FLYING;// A state where the character transitions from falling to flying  
 			FLYING: next_state = (velocity < 4'd10) ? FLYING_TO_FALLING : FLYING;
             FLYING_TO_FALLING: next_state = (velocity <= 4'd3 && velocity >= -4'd3) ? FLYING_TO_FALLING : FALLING;// A state where the character transitions from flying to falling
+				default: next_state = FALLING;
         endcase
     end
 
     always @(game_tick_clock)
     begin: box_location_update
-
         case (current_state)
             FALLING: begin
-                current_y_coordinate <= current_y_coordinate + velocity;
-                velocity <= velocity - 1;
+                
+					 if(current_y_coordinate >= 100)
+						current_y_coordinate <= current_y_coordinate + 1;
                 end
-            FALLING_TO_FLYING: begin
-                current_y_coordinate <= current_y_coordinate + velocity;
-                velocity <= velocity + 1;
-		end
-            FLYING: begin
-                current_y_coordinate <= current_y_coordinate - velocity;
-		velocity <= velocity - 1;
-                end
-            FLYING_TO_FALLING: begin
-                current_y_coordinate <= current_y_coordinate - velocity;
-                velocity <= velocity - 1;
-                end
-        // default:    // don't need default since we already made sure all of our outputs were assigned a value at the start of the always block
+            //default:
+		  // don't need default since we already made sure all of our outputs were assigned a value at the start of the always block
         endcase
     end // box_location_update
     
-    always@(posedge CLOCK_50)
+    always@(posedge game_tick_clock)
     begin: state_FFs
         current_state <= next_state;
     end // state_FFS    

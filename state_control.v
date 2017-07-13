@@ -1,9 +1,8 @@
 module state_control(
-    input clock_pulse, // This clock speed dictates game/frame speed
+    input game_tick_pulse, // This clock speed dictates game/frame speed
     input input_signal,
     output draw_frame
     );
-    input CLOCK_50;
     reg reg_draw_frame;
 	 assign draw_frame = reg_draw_frame;
     reg [5:0] current_state, next_state; 
@@ -25,7 +24,7 @@ module state_control(
                 WAIT_START_SCREEN: next_state = input_signal ? ERASE_START_SCREEN : WAIT_START_SCREEN;
                 ERASE_START_SCREEN: next_state = DRAW_CURRENT_FRAME;
                 DRAW_CURRENT_FRAME: next_state = STALL_FRAME;
-                STALL_FRAME: next_state = clock_pulse ? ERASE_CURRENT_FRAME : STALL_FRAME;
+                STALL_FRAME: next_state = game_tick_pulse ? ERASE_CURRENT_FRAME : STALL_FRAME;
                 ERASE_CURRENT_FRAME: next_state = PROGRESS_NEXT_FRAME;
                 PROGRESS_NEXT_FRAME: next_state = DRAW_CURRENT_FRAME;
                 DRAW_GAME_OVER: next_state = WAIT_GAME_OVER;
@@ -66,7 +65,7 @@ module state_control(
     end // enable_signals
 
 
-    always@(posedge CLOCK_50)
+    always@(*)
     begin: state_FFs
         current_state <= next_state;
     end // state_FFS
