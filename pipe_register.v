@@ -29,86 +29,80 @@ module pipe_register(CLOCK_50, key_press, game_clk, x, y);
 
     // assign a random number to each of the counters based on
     // curr_counter's number
-//    wire [6:0] random;
-//	 
-//    clock get_y(
-//		.CLOCK_50(CLOCK_50), 
-//		.clk_speed(3'd4), 
-//		.current_number(random)
-//		);
-//    always @(posedge key_press)
-//        begin
-//            if (curr_counter == 0) 
-//                begin
-//                    counter0[6:0] <= random[6:0];
-//                    curr_counter <= curr_counter + 1;
-//                    output_counter[6:0] <= counter0[6:0];
-//                end 
-//            else if (curr_counter == 1)
-//                begin
-//                    counter1[6:0] <= random[6:0];
-//                    curr_counter <= curr_counter + 1;
-//                    output_counter[6:0] <= counter1[6:0];                   
-//                end                 
-//            else if (curr_counter == 2)
-//                begin
-//                    counter2[6:0] <= random[6:0];
-//                    curr_counter <= curr_counter + 1;
-//                    output_counter[6:0] <= counter2[6:0];
-//                end 
-//            else if (curr_counter == 3)
-//                begin
-//                    counter3[6:0] <= random[6:0];
-//                    curr_counter <= curr_counter + 1;
-//                    output_counter[6:0] <= counter3[6:0];
-//                end 
-//            else if (curr_counter == 4)
-//                begin
-//                    counter4[6:0] <= random[6:0];
-//                    curr_counter <= curr_counter + 1;
-//                    output_counter[6:0] <= counter4[6:0];
-//                end 
-//            else if (curr_counter == 5)
-//                begin
-//                    counter5[6:0] <= random[6:0];
-//                    curr_counter <= curr_counter + 1;
-//                    output_counter[6:0] <= counter5[6:0];
-//                end 
-//            else if (curr_counter == 6)
-//                begin
-//                    counter6[6:0] <= random[6:0];
-//                    curr_counter <= curr_counter + 1;
-//                    output_counter[6:0] <= counter6[6:0];
-//                end 
-//            else if (curr_counter == 7)
-//                begin
-//                    counter7[6:0] <= random[6:0];
-//                    curr_counter <= curr_counter + 1;
-//              		  output_counter[6:0] <= counter7[6:0];
-//                end 
-//            else if (curr_counter == 8)
-//                begin
-//                    counter8[6:0] <= random[6:0];
-//                    curr_counter <= curr_counter + 1;
-//                    output_counter[6:0] <= counter8[6:0];
-//                end 
-//            else if (curr_counter == 9)
-//                begin
-//                    counter9[6:0] <= random[6:0];
-//                    curr_counter <= 0;
-//                    output_counter[6:0] <= counter9[6:0];
-//                end 
-//        end
-
-    // move the pipe by 1
-    always @(posedge game_clk)
+    wire [6:0] random;
+	 
+    clock get_y(
+		.CLOCK_50(CLOCK_50), 
+		.clk_speed(3'd4), 
+		.current_number(random)
+		);
+    always @(posedge key_press)
         begin
-//            if (curr_x == 0) 
-//                begin
-//                    curr_y[6:0] <= output_counter[6:0];
-//                    curr_x <= 8'd160;
-//                end
-//            else
+            if (curr_counter == 0) 
+                begin
+                    counter0[6:0] <= random[6:0];
+                    curr_counter <= curr_counter + 1;
+                    output_counter[6:0] <= counter0[6:0];
+                end 
+            else if (curr_counter == 1)
+                begin
+                    counter1[6:0] <= random[6:0];
+                    curr_counter <= curr_counter + 1;
+                    output_counter[6:0] <= counter2[6:0];
+                end 
+            else if (curr_counter == 3)
+                begin
+                    counter3[6:0] <= random[6:0];
+                    curr_counter <= curr_counter + 1;
+                    output_counter[6:0] <= counter3[6:0];
+                end 
+            else if (curr_counter == 4)
+                begin
+                    counter4[6:0] <= random[6:0];
+                    curr_counter <= curr_counter + 1;
+                    output_counter[6:0] <= counter4[6:0];
+                end 
+            else if (curr_counter == 5)
+                begin
+                    counter5[6:0] <= random[6:0];
+                    curr_counter <= curr_counter + 1;
+                    output_counter[6:0] <= counter5[6:0];
+                end 
+            else if (curr_counter == 6)
+                begin
+                    counter6[6:0] <= random[6:0];
+                    curr_counter <= curr_counter + 1;
+                    output_counter[6:0] <= counter6[6:0];
+                end 
+            else if (curr_counter == 7)
+                begin
+                    counter7[6:0] <= random[6:0];
+                    curr_counter <= curr_counter + 1;
+              		  output_counter[6:0] <= counter7[6:0];
+                end 
+            else if (curr_counter == 8)
+                begin
+                    counter8[6:0] <= random[6:0];
+                    curr_counter <= curr_counter + 1;
+                    output_counter[6:0] <= counter8[6:0];
+                end 
+            else if (curr_counter == 9)
+                begin
+                    counter9[6:0] <= random[6:0];
+                    curr_counter <= 0;
+                    output_counter[6:0] <= counter9[6:0];
+                end 
+        end
+                
+    // move the pipe by 1
+    always @(game_clk)
+        begin
+            if (curr_x == 0) 
+                begin
+                    curr_y[6:0] <= output_counter[6:0];
+                    curr_x <= 8'd160;
+                end
+            else
                 curr_x <= curr_x - 1'b1;
         end
    

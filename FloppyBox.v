@@ -31,7 +31,7 @@ module FloppyBox(
 	//assign resetn = KEY[0];
 	
 	// Create the colour, x, y and writeEn wires that are inputs to the controller.
-	wire [2:0] colour = 3'b001;
+	wire [2:0] colour;
 	wire [7:0] x;
 	wire [6:0] y;
 	wire writeEn;
@@ -45,7 +45,7 @@ module FloppyBox(
 			.colour(colour),//colour
 			.x(x),
 			.y(y),
-			.plot(1'b1),//writeEn
+			.plot(writeEn),//writeEn
 			/* Signals for the DAC to drive the monitor. */
 			.VGA_R(VGA_R),
 			.VGA_G(VGA_G),
@@ -62,29 +62,53 @@ module FloppyBox(
 			
 	// Put your code here. Your code should produce signals x,y,colour and writeEn/plot
 	// for the VGA controller, in addition to any other functionality your design may require.
+	wire game_tick_wire;
+	wire game_tick_early_wire;
+	wire game_pulse_wire;
+	wire game_tick_after_draw_wire;
+	wire [7:0]pipe_one_x_wire;
+	wire [6:0]pipe_one_y_wire;
     wire draw_frame_wire;
     wire [6:0]box_y_wire;
     wire flying_wire;
+	 game_clock gc(
+			.CLOCK_50(CLOCK_50),
+			.NEW_CLOCK(game_tick_wire),
+			.NEW_CLOCK_EARLY(game_tick_early_wire),
+			.NEW_PULSE(game_pulse_wire)
+			);
+	 pipe_register pr1(
+			.key_press(KEY[2]),
+			.CLOCK_50(CLOCK_50),
+			.game_clk(game_tick_after_draw_wire),
+			.x(pipe_one_x_wire),
+			.y(pipe_one_y_wire)
+			);
     box_register box_reg(
-        .game_tick_clock(KEY[1]),// Temp
+        .game_tick_clock(game_tick_wire),// Temp
         .tap(1'b0), // Temp
         .flying(flying_wire),
         .y_coordinate(box_y_wire)
         );
 
 	state_control state_ctrl(
-		.game_tick_pulse(KEY[1]),// Temp
-		.input_signal(KEY[0]), // Temp
+		.game_tick_pulse(game_tick_wire),// Temp
+		.input_signal(game_tick_after_draw_wire), // Temp
         .draw_frame(draw_frame_wire)
 		);
 
 	painter p(
-        .clk(CLOCK_50),
+        .CLOCK_50(CLOCK_50),
+		  .game_pulse(game_pulse_wire),
         .draw_frame(draw_frame_wire),
         .box_y(box_y_wire),
+		  .pipe_one_x(pipe_one_x_wire),
+		  .pipe_one_y(pipe_one_y_wire),
         .plot(writeEn),
         .x(x),
-        .y(y)
+        .y(y),
+		  .colour(colour),
+		  .game_tick_after_draw(game_tick_after_draw_wire)
 	    );
 endmodule
 
