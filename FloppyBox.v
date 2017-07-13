@@ -62,30 +62,30 @@ module FloppyBox(
 			
 	// Put your code here. Your code should produce signals x,y,colour and writeEn/plot
 	// for the VGA controller, in addition to any other functionality your design may require.
-    wire draw_box_wire;
+    wire draw_frame_wire;
     wire [6:0]box_y_wire;
     wire flying_wire;
     box_register box_reg(
-        .game_tick_clock(CLOCK_50),// Temp
+        .game_tick_clock(KEY[1]),// Temp
         .tap(1'b0), // Temp
         .flying(flying_wire),
         .y_coordinate(box_y_wire)
         );
 
 	state_control state_ctrl(
-		.game_tick_pulse(CLOCK_50),// Temp
+		.game_tick_pulse(KEY[1]),// Temp
 		.input_signal(KEY[0]), // Temp
-        .draw_box(draw_box_wire)
+        .draw_frame(draw_frame_wire)
 		);
 
 	painter p(
         .clk(CLOCK_50),
-        .draw_box(draw_box_wire),
+        .draw_frame(draw_frame_wire),
         .box_y(box_y_wire),
         .plot(writeEn),
         .x(x),
         .y(y)
-	);
+	    );
 endmodule
 
 			

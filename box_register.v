@@ -4,6 +4,7 @@ module box_register( // A register for holding and manipulating information abou
 	output flying, 
 	output [6:0] y_coordinate 
 	);
+    input CLOCK_50;
 	reg [5:0] current_state, next_state; 
 	reg[3:0] velocity = 4'd0;
 	reg [6:0] current_y_coordinate = 7'd60;
@@ -50,5 +51,8 @@ module box_register( // A register for holding and manipulating information abou
         endcase
     end // box_location_update
     
-    
+    always@(posedge CLOCK_50)
+    begin: state_FFs
+        current_state <= next_state;
+    end // state_FFS    
 endmodule

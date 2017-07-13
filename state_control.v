@@ -1,21 +1,21 @@
 module state_control(
     input clock_pulse, // This clock speed dictates game/frame speed
     input input_signal,
-    output draw_box
+    output draw_frame
     );
-
-    reg draw_box_reg;
-	 assign draw_box = draw_box_reg;
+    input CLOCK_50;
+    reg reg_draw_frame;
+	 assign draw_frame = reg_draw_frame;
     reg [5:0] current_state, next_state; 
-    localparam  DRAW_START_SCREEN    = 3'd0,
-                WAIT_START_SCREEN    = 3'd1,
-                ERASE_START_SCREEN   = 3'd2,
-                ERASE_CURRENT_FRAME  = 3'd3,
-                PROGRESS_NEXT_FRAME  = 3'd4,
-                DRAW_CURRENT_FRAME   = 3'd5,
-		        STALL_FRAME          = 3'd6,
-                DRAW_GAME_OVER       = 3'd7,
-		        WAIT_GAME_OVER       = 3'd8;
+    localparam  DRAW_START_SCREEN    = 4'd0,
+                WAIT_START_SCREEN    = 4'd1,
+                ERASE_START_SCREEN   = 4'd2,
+                ERASE_CURRENT_FRAME  = 4'd3,
+                PROGRESS_NEXT_FRAME  = 4'd4,
+                DRAW_CURRENT_FRAME   = 4'd5,
+                STALL_FRAME          = 4'd6,
+                DRAW_GAME_OVER       = 4'd7,
+                WAIT_GAME_OVER       = 4'd8;
                 
 
     always@(*)
@@ -23,11 +23,11 @@ module state_control(
             case (current_state)
                 DRAW_START_SCREEN: next_state = WAIT_START_SCREEN;
                 WAIT_START_SCREEN: next_state = input_signal ? ERASE_START_SCREEN : WAIT_START_SCREEN;
-                ERASE_START_SCREEN: next_state = DRAW_NEXT_FRAME;
+                ERASE_START_SCREEN: next_state = DRAW_CURRENT_FRAME;
                 DRAW_CURRENT_FRAME: next_state = STALL_FRAME;
                 STALL_FRAME: next_state = clock_pulse ? ERASE_CURRENT_FRAME : STALL_FRAME;
                 ERASE_CURRENT_FRAME: next_state = PROGRESS_NEXT_FRAME;
-                PROGRESS_NEXT_FRAME: next_state = DRAW_NEXT_FRAME;
+                PROGRESS_NEXT_FRAME: next_state = DRAW_CURRENT_FRAME;
                 DRAW_GAME_OVER: next_state = WAIT_GAME_OVER;
                 WAIT_GAME_OVER: next_state = input_signal ? DRAW_START_SCREEN : WAIT_GAME_OVER;
             endcase
@@ -36,7 +36,6 @@ module state_control(
     always @(*)
     begin: enable_signals
         // By default make all our signals 0
-        game_tick = 1'b0;
 	    //draw_box_reg = 1'b0;
         case (current_state)
             DRAW_START_SCREEN: begin
@@ -48,13 +47,15 @@ module state_control(
             ERASE_START_SCREEN: begin
 
                 end
-            DRAW_NEXT_FRAME: begin
-		        draw_box_reg = 1'b1;
+            DRAW_CURRENT_FRAME: begin
+		        reg_draw_frame = 1'b1;
                 end
             STALL_FRAME: begin 
                 end
             ERASE_CURRENT_FRAME: begin
                 end
+            PROGRESS_NEXT_FRAME: begin
+		end
             DRAW_GAME_OVER: begin
                 end
             WAIT_GAME_OVER: begin
@@ -64,6 +65,11 @@ module state_control(
         endcase
     end // enable_signals
 
+
+    always@(posedge CLOCK_50)
+    begin: state_FFs
+        current_state <= next_state;
+    end // state_FFS
 
 	
    
