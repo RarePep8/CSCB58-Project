@@ -31,7 +31,7 @@ module painter(
                 DRAW_BOX_7          = 9'd6,
                 DRAW_BOX_8          = 9'd7,
                 DRAW_BOX_9          = 9'd8,
-                DRAW_PIPE_ONE_1     = 9'd9,
+                DRAW_PIPE_ONE_LINE  = 9'd9,
                 DRAW_PIPE_ONE_GAP   = 9'd10,
                 WAIT                = 9'd36,
                 GREEN               = 3'b010,
@@ -68,14 +68,14 @@ module painter(
 //                end
             DRAW_PIPE_ONE_LINE: begin
                 plot_reg <= 1'b1;
-                colour <= GREEN;
+                colour_reg <= GREEN;
                 x_reg[7:0] <= pipe_1_x[7:0];
                 seven_bit_counter <= seven_bit_counter + 1'b1;
                 y_reg[6:0] <= seven_bit_counter;
                 end
             DRAW_PIPE_ONE_GAP: begin
                 plot_reg <= 1'b1;
-                colour <= BLACK;
+                colour_reg <= BLACK;
                 x_reg[7:0] <= pipe_1_x[7:0];
                 y_reg[6:0] <= y_reg[6:0] + {3'b0, gap_counter[2:0]};
                 gap_counter <= gap_counter + 1'b1;
