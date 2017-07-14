@@ -19,10 +19,9 @@ module painter(
 	assign plot = plot_reg;
     reg [2:0]colour_reg;
     assign colour[2:0] = colour_reg[2:0];
-    reg [6:0] seven_bit_counter =7'd0;
+    reg [6:0] seven_bit_counter =7'd1;
     reg [6:0] gap_counter;
-	 reg is_erase;
-	 reg [6:0] seven_bit_counter_erase = 7'd0;
+    reg is_erase;
 	reg game_tick_after_draw_reg;
 	assign game_tick_after_draw = game_tick_after_draw_reg;
     reg [5:0] current_state, next_state; 
@@ -58,20 +57,25 @@ module painter(
 //                DRAW_BOX_7: next_state = DRAW_BOX_8;
 //                DRAW_BOX_8: next_state = DRAW_BOX_9;
 //                DRAW_BOX_9: next_state = DRAW_PIPE_ONE_1;
-                 DRAW_PIPE_ONE_LINE: next_state = (seven_bit_counter == 0) ? WAIT_ERASE : DRAW_PIPE_ONE_LINE;
-					  WAIT_ERASE: next_state = game_pulse ? ERASE_PIPE_LINE : WAIT_ERASE;
-					  ERASE_PIPE_LINE : next_state = (seven_bit_counter_erase == 0) ? DONE_ERASE : ERASE_PIPE_LINE;
-					  DONE_ERASE : next_state = DRAW_PIPE_ONE_LINE;
+				DRAW_PIPE_ONE_LINE: begin
+					next_state = DRAW_PIPE_ONE_LINE;
+					if(seven_bit_counter == 0 && is_erase)
+						next_state = DONE_ERASE;
+					else if(seven_bit_counter == 0 && !is_erase)
+						next_state = WAIT_ERASE;
+					end
+				WAIT_ERASE: next_state = game_pulse ? DRAW_PIPE_ONE_LINE : WAIT_ERASE;
+				DONE_ERASE : next_state = DRAW_PIPE_ONE_LINE;
 //                DRAW_PIPE_ONE_GAP: next_state = (gap_counter == 0) ? DRAW_PIPE_ONE_LINE : DRAW_PIPE_ONE_GAP;
 //						ERASE_OR_DRAW: next_state = (is_erase) ? WAIT_ERASE : WAIT_DRAW;
 //						WAIT_ERASE : next_state = game_pulse ? DRAW_PIPE_ONE_LINE : WAIT_ERASE;
 //						WAIT_DRAW: next_state = DRAW_PIPE_ONE_LINE;
-						default: next_state = ERASE_PIPE_LINE;
+						default: next_state = WAIT_ERASE;
             endcase
     end
 
     // Output logic aka all of our datapath control signals
-    always @(CLOCK_50)
+    always @(*)
     begin: enable_signals
         // By default make all our signals 0
 
@@ -85,6 +89,8 @@ module painter(
             DRAW_PIPE_ONE_LINE: begin
                 plot_reg <= 1'b1;
                 colour_reg <= GREEN;
+                if(is_erase)
+                    colour <= BLACK;
                 x_reg[7:0] <= pipe_one_x[7:0];
                 seven_bit_counter <= seven_bit_counter + 1'b1;
 					 if(seven_bit_counter > 7'b1111111) begin
@@ -93,16 +99,7 @@ module painter(
                 y_reg[6:0] <= seven_bit_counter[6:0];
                 end
 					 
-				ERASE_PIPE_LINE: begin
-					plot_reg <= 1'b1;
-					colour_reg <= BLACK;
-					x_reg[7:0] <= pipe_one_x - 1'b1;
-					seven_bit_counter_erase <= seven_bit_counter_erase + 1'b1;
-					if(seven_bit_counter_erase > 7'b1111111) begin
-						seven_bit_counter_erase <= 7'b0;
-						end
-                y_reg[6:0] <= seven_bit_counter_erase[6:0];
-                end
+
 //            DRAW_PIPE_ONE_GAP: begin
 //                plot_reg <= 1'b1;
 //                colour_reg <= BLACK;
@@ -139,10 +136,12 @@ module painter(
 
 				DONE_ERASE: begin
 						game_tick_after_draw_reg <= ~game_tick_after_draw_reg;
-						seven_bit_counter_erase <= 1'd1;
+						seven_bit_counter <= 1'd1;
+						is_erase <= 1'b0;
 						end
 				WAIT_ERASE: begin
 						seven_bit_counter <= 1'd1;
+                        is_erase <= 1'b1;
 						end
 
            // default:    
@@ -155,7 +154,7 @@ module painter(
 
 
 
-    always@(CLOCK_50)
+    always@(posedge CLOCK_50)
     begin: state_FFs
         current_state <= next_state;
     end // state_FFS
