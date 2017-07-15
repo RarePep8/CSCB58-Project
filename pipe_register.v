@@ -31,7 +31,7 @@ module pipe_register(CLOCK_50, key_press, game_clk, x, y);
     // curr_counter's number
     wire [6:0] random;
 	 
-    clock get_y(
+    clock get_random_y(
 		.CLOCK_50(CLOCK_50), 
 		.clk_speed(3'd4), 
 		.current_number(random)

@@ -17,29 +17,16 @@ module box_register( // A register for holding and manipulating information abou
                FLYING = 3'd2,
                FLYING_TO_FALLING = 3'd3;
 
-//	always@(*)
-//	begin: state_table
-//		case (current_state)
-//			FALLING: next_state = FALLING;//(velocity > -4'd10) ? FALLING_TO_FLYING : FALLING;  
-//            FALLING_TO_FLYING: next_state = (velocity <= 4'd10 && velocity >= -4'd10) ? FALLING_TO_FLYING : FLYING;// A state where the character transitions from falling to flying  
-//			FLYING: next_state = (velocity < 4'd10) ? FLYING_TO_FALLING : FLYING;
-//            FLYING_TO_FALLING: next_state = (velocity <= 4'd3 && velocity >= -4'd3) ? FLYING_TO_FALLING : FALLING;// A state where the character transitions from flying to falling
-//				default: next_state = FALLING;
-//        endcase
-//    end
-//
-//    always @(game_tick_clock)
-//    begin: box_location_update
-//        case (current_state)
-//            FALLING: begin
-//                
-//					 if(current_y_coordinate >= 100)
-//						current_y_coordinate <= current_y_coordinate + 1;
-//                end
-//            //default:
-//		  // don't need default since we already made sure all of our outputs were assigned a value at the start of the always block
-//        endcase
-//    end // box_location_update
+
+    always @(game_tick_clock)
+    begin: box_location_update
+
+                
+        if(current_y_coordinate <= 7'd120) begin
+			current_y_coordinate <= current_y_coordinate + 1;
+        end
+
+    end // box_location_update
     
     always@(posedge game_tick_clock)
     begin: state_FFs
