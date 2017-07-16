@@ -1,7 +1,6 @@
 module box_register( // A register for holding and manipulating information about the character(the box)
     input game_tick_clock,
 	input  tap, // a pulse signal triggered by pos edge of an user input
-	output flying, 
 	output [6:0] y_coordinate 
 	);
 
@@ -9,8 +8,6 @@ module box_register( // A register for holding and manipulating information abou
 	reg[3:0] velocity = 4'd0;
 	reg [6:0] current_y_coordinate = 7'd60;
 	assign y_coordinate[6:0] = current_y_coordinate[6:0];
-	reg is_flying;
-	assign flying = is_flying;
 	
 	localparam FALLING = 3'd0,
 		       FALLING_TO_FLYING = 3'd1,

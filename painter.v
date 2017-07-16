@@ -1,15 +1,14 @@
 module painter(
-	 input CLOCK_50,
-	 input game_pulse,
-    input draw_frame,
+    input CLOCK_50,
+    input game_pulse,
     input [6:0]box_y,
-	 input [7:0]pipe_one_x,
-	 input [6:0]pipe_one_y,
+    input [7:0]pipe_one_x,
+    input [6:0]pipe_one_y,
     output plot,
     output [7:0] x,
     output [6:0] y,
     output [2:0] colour,
-	 output game_tick_after_draw
+    output game_tick_after_draw
     );
 	reg [7:0] x_reg;
 	reg [6:0] y_reg;
@@ -75,7 +74,7 @@ module painter(
     end
 
     // Output logic aka all of our datapath control signals
-    always @(*)
+    always @(posedge CLOCK_50)
     begin: enable_signals
         // By default make all our signals 0
 
@@ -90,7 +89,7 @@ module painter(
                 plot_reg <= 1'b1;
                 colour_reg <= GREEN;
                 if(is_erase)
-                    colour <= BLACK;
+                    colour_reg <= BLACK;
                 x_reg[7:0] <= pipe_one_x[7:0];
                 seven_bit_counter <= seven_bit_counter + 1'b1;
 					 if(seven_bit_counter > 7'b1111111) begin
