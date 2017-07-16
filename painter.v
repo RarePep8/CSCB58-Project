@@ -8,7 +8,7 @@ module painter(
     output [7:0] x,
     output [6:0] y,
     output [2:0] colour,
-    output game_tick_after_draw
+    output game_tick_after_erase
     );
 	reg [7:0] x_reg;
 	reg [6:0] y_reg;
@@ -21,8 +21,8 @@ module painter(
     reg [6:0] seven_bit_counter =7'd1;
     reg [6:0] gap_counter;
     reg is_erase;
-	reg game_tick_after_draw_reg;
-	assign game_tick_after_draw = game_tick_after_draw_reg;
+	reg game_tick_after_erase_reg;
+	assign game_tick_after_erase = game_tick_after_erase_reg;
     reg [5:0] current_state, next_state; 
     localparam  DRAW_BOX_1          = 9'd0,
                 DRAW_BOX_2          = 9'd1,
@@ -134,7 +134,7 @@ module painter(
 //                end
 
 				DONE_ERASE: begin
-						game_tick_after_draw_reg <= ~game_tick_after_draw_reg;
+						game_tick_after_erase_reg <= ~game_tick_after_erase_reg;
 						seven_bit_counter <= 1'd1;
 						is_erase <= 1'b0;
 						end
