@@ -81,7 +81,7 @@ module FloppyBox(
 			.y(pipe_one_y_wire)
 			);
     box_register box_reg(
-        .game_tick_clock(advance_frame_wire),
+        .game_clk(advance_frame_wire),
         .tap(1'b0), // Temp
         .y_coordinate(box_y_wire)
         );
