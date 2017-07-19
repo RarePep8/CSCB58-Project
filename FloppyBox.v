@@ -32,7 +32,7 @@ module FloppyBox(
 	
 	// Create the colour, x, y and writeEn wires that are inputs to the controller.
 	wire [2:0] colour;
-	wire [7:0] x;
+	wire [8:0] x;
 	wire [6:0] y;
 	wire writeEn;
 	wire screen_state;
@@ -55,7 +55,7 @@ module FloppyBox(
 			.VGA_BLANK(VGA_BLANK_N),
 			.VGA_SYNC(VGA_SYNC_N),
 			.VGA_CLK(VGA_CLK));
-		defparam VGA.RESOLUTION = "160x120";
+		defparam VGA.RESOLUTION = "160x120"; //160x120
 		defparam VGA.MONOCHROME = "FALSE";
 		defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
 		defparam VGA.BACKGROUND_IMAGE = "black.mif";
@@ -65,23 +65,30 @@ module FloppyBox(
 	wire game_tick_wire;
 	wire game_pulse_wire;
 	wire advance_frame_wire;
-	wire [7:0]pipe_one_x_wire;
+	wire pulse_early_wire;
+	wire [8:0]pipe_one_x_wire;
 	wire [6:0]pipe_one_y_wire;
     wire [6:0]box_y_wire;
+	 wire test_pulse;
+	 pos_edge_pulser pep(
+			.in(KEY[0]),
+			.pulse(test_pulse)
+			);
 	 game_clock gc(
 			.CLOCK_50(CLOCK_50),
 			.NEW_CLOCK(game_tick_wire),
-			.NEW_PULSE(game_pulse_wire)
+			.NEW_CLOCK_EARLY(game_pulse_wire),
+			.NEW_PULSE_EARLY(pulse_early_wire)
 			);
 	 pipe_register pr1(
 			.key_press(KEY[2]),
 			.CLOCK_50(CLOCK_50),
-			.game_clk(advance_frame_wire),
+			.game_clk(game_tick_wire),//advance_frame_wire
 			.x(pipe_one_x_wire),
 			.y(pipe_one_y_wire)
 			);
     box_register box_reg(
-        .game_clk(advance_frame_wire),
+        .game_clk(game_tick_wire), //advance_frame_wire
         .tap(1'b0), // Temp
         .y_coordinate(box_y_wire)
         );
@@ -90,7 +97,7 @@ module FloppyBox(
 
 	painter p(
         .CLOCK_50(CLOCK_50),
-        .game_pulse(game_pulse_wire),
+        .game_pulse(pulse_early_wire), //game_pulse_wire
         .box_y(box_y_wire),
         .pipe_one_x(pipe_one_x_wire),
         .pipe_one_y(pipe_one_y_wire),
