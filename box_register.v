@@ -1,9 +1,9 @@
 module box_register( // A register for holding and manipulating information about the character(the box)
     input game_clk,
-	input  tap, // a pulse signal triggered by pos edge of an user input
+	input  user_input_clock, // a clock that alternates its signal every time the user inputs
 	output [6:0] y_coordinate 
 	);
-	reg curr_tap = 1'b0;
+	reg curr_signal = 1'b0;
     reg tapped = 1'b0;
     reg [3:0]fly_speed = 4'd0;
 	reg [6:0] current_y_coordinate = 7'd60;
@@ -23,12 +23,12 @@ module box_register( // A register for holding and manipulating information abou
 
     end // box_location_update
 
-    always @(tap, game_clk)
+    always @(user_input_clock, game_clk)
 	 begin: fly_update
-        if(curr_tap != tap) begin
+        if(curr_signal != user_input_clock) begin
             tapped <= 1'b1;
-				curr_tap <= tap;
-				end
+			curr_signal <= user_input_clock;
+			end
         else
             tapped <= 1'b0;    
     end //fly_update
