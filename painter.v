@@ -2,23 +2,24 @@ module painter(
     input CLOCK_50,
     input game_pulse,
     input [6:0]box_y,
-    input [8:0]pipe_one_x,
+    input [7:0]pipe_one_x,
     input [6:0]pipe_one_y,
     output plot,
-    output [8:0] x,
+    output [7:0] x,
     output [6:0] y,
     output [2:0] colour,
     output game_tick_after_erase
     );
-	reg [8:0] x_reg;
+	reg [7:0] x_reg;
 	reg [6:0] y_reg;
-    assign x[8:0] = x_reg[8:0];
+    assign x[7:0] = x_reg[7:0];
     assign y[6:0] = y_reg[6:0];
+    reg [6:0] temp_y_reg;
     reg plot_reg;
 	assign plot = plot_reg;
     reg [2:0]colour_reg;
     assign colour[2:0] = colour_reg[2:0];
-    reg [6:0] seven_bit_counter =7'd1;
+    reg [6:0] seven_bit_counter =7'd10;
     reg [6:0] gap_counter;
     reg is_erase;
 	reg game_tick_after_erase_reg;
@@ -86,18 +87,20 @@ module painter(
 //                x_reg[7:0] <= 8'b00000100;
 //                y_reg[6:0] <= box_y[6:0];
 //                end
-				DRAW_PIPE_ONE_LINE_PREPARE:
-					x_reg[8:0] <= pipe_one_x[8:0];
+				DRAW_PIPE_ONE_LINE_PREPARE: begin
+					x_reg[7:0] <= pipe_one_x[7:0];
+					temp_y_reg[6:0] <= pipe_one_y[6:0];
+					colour_reg <= GREEN;
+               if(is_erase)
+                   colour_reg <= BLACK;
+				    end
             DRAW_PIPE_ONE_LINE: begin
                 plot_reg <= 1'b1;
-                colour_reg <= GREEN;
-                if(is_erase)
-                    colour_reg <= BLACK;
                 seven_bit_counter <= seven_bit_counter + 1'b1;
 					 if(seven_bit_counter > 7'b1111111) begin
 						seven_bit_counter <= 7'b0;
 						end
-                y_reg[6:0] <= seven_bit_counter[6:0];
+                y_reg[6:0] <= temp_y_reg[6:0] + seven_bit_counter[6:0];
                 end
 					 
 
@@ -137,11 +140,11 @@ module painter(
 
 				DONE_ERASE: begin
 						game_tick_after_erase_reg <= ~game_tick_after_erase_reg;
-						seven_bit_counter <= 7'd1;
+						seven_bit_counter <= 7'd10;
 						is_erase <= 1'b0;
 						end
 				WAIT_ERASE: begin
-						seven_bit_counter <= 7'd1;
+						seven_bit_counter <= 7'd10;
                         is_erase <= 1'b1;
 						end
 

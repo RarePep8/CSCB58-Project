@@ -32,7 +32,7 @@ module FloppyBox(
 	
 	// Create the colour, x, y and writeEn wires that are inputs to the controller.
 	wire [2:0] colour;
-	wire [8:0] x;
+	wire [7:0] x;
 	wire [6:0] y;
 	wire writeEn;
 	wire screen_state;
@@ -66,13 +66,13 @@ module FloppyBox(
 	wire game_pulse_wire;
 	wire advance_frame_wire;
 	wire pulse_early_wire;
-	wire [8:0]pipe_one_x_wire;
+    wire user_input_clock_wire;
+	wire [7:0]pipe_one_x_wire;
 	wire [6:0]pipe_one_y_wire;
     wire [6:0]box_y_wire;
-	 wire test_pulse;
-	 pos_edge_pulser pep(
-			.in(KEY[0]),
-			.pulse(test_pulse)
+	 user_input_signal uis(
+			.user_input(1'b0),
+			.user_input_clock(user_input_clock_wire)
 			);
 	 game_clock gc(
 			.CLOCK_50(CLOCK_50),
@@ -89,7 +89,7 @@ module FloppyBox(
 			);
     box_register box_reg(
         .game_clk(game_tick_wire), //advance_frame_wire
-        .tap(1'b0), // Temp
+        .user_input_clock(user_input_clock_wire),
         .y_coordinate(box_y_wire)
         );
 
