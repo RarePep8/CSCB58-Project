@@ -24,7 +24,7 @@ module game_clock(CLOCK_50, NEW_CLOCK, NEW_CLOCK_EARLY,NEW_PULSE, NEW_PULSE_EARL
 		Enable <= (counter_25 == 28'b0000000000000000000000000000) ? 1 : 0;
 		if(Enable)
 			Alternater = ~Alternater;
-		Enable_early <= (counter_25 == 28'b0000000000000000000011111111) ? 1 : 0;
+		Enable_early <= (counter_25 == 28'b0000000000000000000000001111) ? 1 : 0;
 		if(Enable_early)
 			Alternater_early = ~Alternater_early;
 	end
