@@ -1,9 +1,9 @@
 module clock(CLOCK_50, clk_speed, current_number);
 	input CLOCK_50;
 	input[2:0] clk_speed;
-	output [6:0] current_number;
+	output [3:0] current_number;
 	
-	reg[6:0] q = 6'b000000;
+	reg[3:0] q = 4'b0;
 	assign current_number = q;
 	reg Enable;
 	
@@ -66,7 +66,7 @@ module clock(CLOCK_50, clk_speed, current_number);
 
 	always@(posedge CLOCK_50)
 	begin
-		if(q == 6'd100)
+		if(q == 4'd10)
 			q <= 0;
 		else if(Enable == 1'b1)
 			q <= q + 1'b1;

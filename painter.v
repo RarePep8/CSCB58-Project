@@ -8,6 +8,8 @@ module painter(
 	 input [6:0]pipe_two_y,
 	 input [8:0]pipe_three_x,
 	 input [8:0]pipe_three_y,
+    input collided,
+    input key_press,
     output plot,
     output [8:0] x,
     output [6:0] y,
@@ -23,7 +25,6 @@ module painter(
 	assign plot = plot_reg;
     reg [2:0]colour_reg;
     assign colour[2:0] = colour_reg[2:0];
-    reg [6:0] seven_bit_counter =7'd40;
     reg [6:0] gap_counter;
     reg is_erase;
 	reg game_tick_after_erase_reg;
@@ -51,9 +52,12 @@ module painter(
 					 ERASE_PIPE_LINE     = 9'd19,
 					 DONE_ERASE				= 9'd20,
                 WAIT                = 9'd21,
+                START_SCREEN        = 9'd22,
                 GREEN               = 3'b010,
                 BLACK               = 3'b000,
-					 RED						= 3'b100;
+					 RED						= 3'b100,
+					 PIPE_GAP_LENGTH		= 7'd30;
+	 reg [6:0] seven_bit_counter =7'd30;
     always@(*)
     begin: state_table
             case (current_state)
@@ -66,6 +70,8 @@ module painter(
 //                DRAW_BOX_7: next_state = DRAW_BOX_8;
 //                DRAW_BOX_8: next_state = DRAW_BOX_9;
 //                DRAW_BOX_9: next_state = DRAW_PIPE_ONE_1;
+                START_SCREEN: 
+                    next_state = key_press ? DRAW_BOX_PREPARE : START_SCREEN;
 				DRAW_BOX_PREPARE:
 					next_state = DRAW_BOX;
 				DRAW_BOX:
@@ -88,7 +94,7 @@ module painter(
 						next_state = WAIT_ERASE;
 					end
 				WAIT_ERASE: next_state = game_pulse ? DRAW_BOX_PREPARE : WAIT_ERASE;
-				DONE_ERASE : next_state = DRAW_BOX_PREPARE;
+				DONE_ERASE : next_state = collided ? START_SCREEN : DRAW_BOX_PREPARE;
 //                DRAW_PIPE_ONE_GAP: next_state = (gap_counter == 0) ? DRAW_PIPE_ONE_LINE : DRAW_PIPE_ONE_GAP;
 //						ERASE_OR_DRAW: next_state = (is_erase) ? WAIT_ERASE : WAIT_DRAW;
 //						WAIT_ERASE : next_state = game_pulse ? DRAW_PIPE_ONE_LINE : WAIT_ERASE;
@@ -123,7 +129,7 @@ module painter(
 					end		
 				DRAW_PIPE_ONE_LINE_PREPARE: begin
 					plot_reg <= 1'b0;
-					seven_bit_counter <= 7'd40;
+					seven_bit_counter <= 7'd30;
 					x_reg[8:0] <= pipe_one_x[8:0];
 					temp_y_reg[6:0] <= pipe_one_y[6:0];
 					colour_reg <= GREEN;
@@ -140,7 +146,7 @@ module painter(
                 end
 				DRAW_PIPE_TWO_LINE_PREPARE: begin
 					plot_reg <= 1'b0;
-					seven_bit_counter <= 7'd40;
+					seven_bit_counter <= 7'd30;
 					x_reg[8:0] <= pipe_two_x[8:0];
 					temp_y_reg[6:0] <= pipe_two_y[6:0];
 					colour_reg <= GREEN;
@@ -157,7 +163,7 @@ module painter(
                 end
 				DRAW_PIPE_THREE_LINE_PREPARE: begin
 					plot_reg <= 1'b0;
-					seven_bit_counter <= 7'd40;
+					seven_bit_counter <= 7'd30;
 					x_reg[8:0] <= pipe_three_x[8:0];
 					temp_y_reg[6:0] <= pipe_three_y[6:0];
 					colour_reg <= GREEN;
@@ -205,14 +211,15 @@ module painter(
 //            DRAW_BOX_9: begin
 //                y_reg[6:0] <= box_y[6:0] - 1;
 //                end
-
+				START_SCREEN:
+						game_tick_after_erase_reg <= ~game_tick_after_erase_reg;
 				DONE_ERASE: begin
 						game_tick_after_erase_reg <= ~game_tick_after_erase_reg;
-						seven_bit_counter <= 7'd40;
+						seven_bit_counter <= 7'd30;
 						is_erase <= 1'b0;
 						end
 				WAIT_ERASE: begin
-						seven_bit_counter <= 7'd40;
+						seven_bit_counter <= 7'd30;
                   is_erase <= 1'b1;
 						end
 

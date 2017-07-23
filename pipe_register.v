@@ -1,4 +1,4 @@
-module pipe_register(CLOCK_50, key_press, starting_x, starting_y, game_clk, x, y);
+module pipe_register(CLOCK_50, key_press, starting_x, starting_y, game_clk, x, y, collided);
     input key_press;
     input CLOCK_50;
     input [8:0] starting_x;
@@ -6,6 +6,7 @@ module pipe_register(CLOCK_50, key_press, starting_x, starting_y, game_clk, x, y
     input game_clk;
     output [8:0] x;
     output [6:0] y;
+	 input collided;
 
     // height of the opening is 20 pixels, its y coordinate is the top of the opening
     // counter to store 10 y coordinates for new pipes
@@ -40,12 +41,12 @@ module pipe_register(CLOCK_50, key_press, starting_x, starting_y, game_clk, x, y
     // move the pipe by 1
     always @(posedge game_clk)
     begin
-	     if (initialize) begin
+	     if (initialize || collided) begin
             initialize <= 1'b0;
 				curr_x[8:0] <= starting_x[8:0];
             curr_y[6:0] <= starting_y[6:0];
 				end
-        else if (curr_x == 8'd0) 
+        else if (curr_x == 9'd0) 
             begin
                 curr_y[6:0] <= random[6:0];
                 curr_x[8:0] <= 9'd160;
@@ -53,6 +54,6 @@ module pipe_register(CLOCK_50, key_press, starting_x, starting_y, game_clk, x, y
         else
             curr_x[8:0] <= curr_x[8:0] - 8'd1;
     end
-   
+
 
 endmodule

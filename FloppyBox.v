@@ -10,12 +10,17 @@ module FloppyBox(
 		VGA_SYNC_N,						//	VGA SYNC
 		VGA_R,   						//	VGA Red[9:0]
 		VGA_G,	 						//	VGA Green[9:0]
-		VGA_B   						//	VGA Blue[9:0]
+		VGA_B,   						//	VGA Blue[9:0]
+        HEX0,
+        HEX1,
+        HEX2
 	);
 
 	input			CLOCK_50;				//	50 MHz
 	input   [3:0]   KEY;
-
+    output [6:0]    HEX0;
+    output [6:0]    HEX1;
+    output [6:0]    HEX2;
 	// Declare your inputs and outputs here
 	// Do not change the following outputs
 	output			VGA_CLK;   				//	VGA Clock
@@ -66,6 +71,7 @@ module FloppyBox(
 	wire game_pulse_wire;
 	wire advance_frame_wire;
 	wire pulse_early_wire;
+   wire user_input_clock_wire;
 	wire [8:0]pipe_one_x_wire;
 	wire [6:0]pipe_one_y_wire;
 	wire [8:0]pipe_two_x_wire;
@@ -73,21 +79,24 @@ module FloppyBox(
 	wire [8:0]pipe_three_x_wire;
 	wire [6:0]pipe_three_y_wire;
    wire [6:0]box_y_wire;
+    wire collided_wire;
+    wire [3:0] current_time_wire;
 
 	 game_clock gc(
 			.CLOCK_50(CLOCK_50),
 			.NEW_CLOCK(game_tick_wire),
 			.NEW_CLOCK_EARLY(game_pulse_wire),
 			.NEW_PULSE_EARLY(pulse_early_wire)
-			);
+);
 	 pipe_register pr1(
-			.key_press(KEY[2]),
+			.key_press(~KEY[0]),
 			.CLOCK_50(CLOCK_50),
 			.starting_x(9'd160),
 			.starting_y(7'd50),
 			.game_clk(advance_frame_wire),//advance_frame_wire
 			.x(pipe_one_x_wire),
-			.y(pipe_one_y_wire)
+			.y(pipe_one_y_wire),
+			.collided(collided_wire)
 			);
 
 	 pipe_register pr2(
@@ -97,27 +106,55 @@ module FloppyBox(
 			.starting_y(7'd30),
 			.game_clk(advance_frame_wire),//advance_frame_wire
 			.x(pipe_two_x_wire),
-			.y(pipe_two_y_wire)
+			.y(pipe_two_y_wire),
+			.collided(collided_wire)
 			);
 			
 	 pipe_register pr3(
-			.key_press(KEY[2]),
+			.key_press(~KEY[0]),
 			.CLOCK_50(CLOCK_50),
 			.starting_x(9'd360),
 			.starting_y(7'd70),
 			.game_clk(advance_frame_wire),//advance_frame_wire
 			.x(pipe_three_x_wire),
-			.y(pipe_three_y_wire)
+			.y(pipe_three_y_wire),
+			.collided(collided_wire)
 			);
-			
+
+    clock time_last(
+        .CLOCK_50(CLOCK_50),
+        .clk_speed(3'd1),
+        .current_number(current_time_wire)
+        );
+
     box_register box_reg(
         .game_clk(game_tick_wire), //advance_frame_wire
         .user_input_clock(~(KEY[0])), // user_input_clock_wire
-        .y_coordinate(box_y_wire)
+        .y_coordinate(box_y_wire),
+		  .collided(collided_wire)
         );
 
+    time_counter current_time(
+        .binary_time(current_time_wire),
+		  .CLOCK_50(CLOCK_50),
+        .hex_0(HEX0),
+        .hex_1(HEX1),
+        .hex_2(HEX2),
+		  .collided(collided_wire)
+        );
 
-
+    collision_detector collision(
+        .box_y(box_y_wire),
+        .CLOCK_50(CLOCK_50),
+        .key_press(~KEY[3]),
+        .pipe_x1(pipe_one_x_wire),
+        .pipe_y1(pipe_one_y_wire),
+        .pipe_x2(pipe_two_x_wire),
+        .pipe_y2(pipe_two_y_wire),
+        .pipe_x3(pipe_three_x_wire),
+        .pipe_y3(pipe_three_y_wire),
+        .collided(collided_wire)
+        );
 
 	painter p(
         .CLOCK_50(CLOCK_50),
@@ -129,6 +166,8 @@ module FloppyBox(
 		  .pipe_two_y(pipe_two_y_wire),
 		  .pipe_three_x(pipe_three_x_wire),
 		  .pipe_three_y(pipe_three_y_wire),
+        .collided(collided_wire),
+        .key_press(~KEY[3]),
         .plot(writeEn),
         .x(x),
         .y(y),
