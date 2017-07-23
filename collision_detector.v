@@ -8,13 +8,13 @@ module collision_detector(box_y, CLOCK_50, key_press,
     input CLOCK_50;
     input key_press;        
 
-    input[7:0] pipe_x1;
+    input[8:0] pipe_x1;
     input[6:0] pipe_y1;
 
-    input[7:0] pipe_x2;
+    input[8:0] pipe_x2;
     input[6:0] pipe_y2;
 
-    input[7:0] pipe_x3;
+    input[8:0] pipe_x3;
     input[6:0] pipe_y3;
 
     output collided;
