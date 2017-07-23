@@ -66,7 +66,6 @@ module FloppyBox(
 	wire game_pulse_wire;
 	wire advance_frame_wire;
 	wire pulse_early_wire;
-   wire user_input_clock_wire;
 	wire [8:0]pipe_one_x_wire;
 	wire [6:0]pipe_one_y_wire;
 	wire [8:0]pipe_two_x_wire;
@@ -74,10 +73,7 @@ module FloppyBox(
 	wire [8:0]pipe_three_x_wire;
 	wire [6:0]pipe_three_y_wire;
    wire [6:0]box_y_wire;
-	 user_input_signal uis(
-			.user_input(1'b0),
-			.user_input_clock(user_input_clock_wire)
-			);
+
 	 game_clock gc(
 			.CLOCK_50(CLOCK_50),
 			.NEW_CLOCK(game_tick_wire),
