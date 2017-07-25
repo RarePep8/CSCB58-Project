@@ -4,9 +4,12 @@ module collision_detector(box_y, CLOCK_50, key_press,
                             pipe_x3, pipe_y3, 
                             collided);
 
+    // use to detect if the pipes and the box has collided and sends out a signal
+
+    // initialize the different inputs 
     input[6:0] box_y;
     input CLOCK_50;
-    input key_press;        
+    input key_press; // key press to reset the signal that the box and pipe has touched
 
     input[8:0] pipe_x1;
     input[6:0] pipe_y1;
@@ -16,7 +19,8 @@ module collision_detector(box_y, CLOCK_50, key_press,
 
     input[8:0] pipe_x3;
     input[6:0] pipe_y3;
-
+    
+    // use a register to store if the box and pipe has touched or not
     output collided;
     reg touched = 1'b0;
     assign collided = touched;
@@ -37,7 +41,7 @@ module collision_detector(box_y, CLOCK_50, key_press,
                 touched <= 1'b1;
             else if (pipe_x3 == (box_x) && (box_y < (pipe_y3) || box_y > (pipe_y3 + 30)))
                 touched <= 1'b1;
-
+            // the key press can reset the signal back to 0
             else if (key_press)
                 touched <= 1'b0;
         end

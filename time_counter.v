@@ -1,14 +1,19 @@
 module time_counter(binary_time, CLOCK_50, hex_0, hex_1, hex_2, collided);
+    // a counter used to display the amount of time the player have lasted through the 7 segment display
+
     input [3:0] binary_time;
-	 input CLOCK_50;
-	 input collided;
+	input CLOCK_50;
+	input collided;
     output [6:0] hex_0;
     output [6:0] hex_1;
     output [6:0] hex_2;
     
+    // the register used to store the second and third digits
     reg [3:0] digit2 = 4'b0;
     reg [3:0] digit3 = 4'b0;
     reg in_game = 1'b1;
+
+    // hex decoder used to help translate binary to the 7 segment displays in decimal
     hex_decoder h0(
         .hex_digit(binary_time[3:0]),
         .segments(hex_0)
@@ -26,6 +31,8 @@ module time_counter(binary_time, CLOCK_50, hex_0, hex_1, hex_2, collided);
 
 //	always @(collided)
 //		in_game <= ~in_game;
+
+    // increase the values of digit 2 and digit 3 whenever the value before it reaches 10
     always @(posedge CLOCK_50)
         begin
 		  if(in_game) begin
@@ -49,6 +56,9 @@ module time_counter(binary_time, CLOCK_50, hex_0, hex_1, hex_2, collided);
 endmodule
 
 module hex_decoder(hex_digit, segments);
+    // decodes binary to seven segment display outputs
+    // CREDIT TO: BRIAN HARRINGTON
+    
     input [3:0] hex_digit;
     output reg [6:0] segments;
    

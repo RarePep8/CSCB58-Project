@@ -15,6 +15,8 @@ module FloppyBox(
         HEX1,
         HEX2
 	);
+    
+    // the main module where all the different module parts are connected together to make the game work
 
 	input			CLOCK_50;				//	50 MHz
 	input   [3:0]   KEY;
@@ -67,27 +69,31 @@ module FloppyBox(
 			
 	// Put your code here. Your code should produce signals x,y,colour and writeEn/plot
 	// for the VGA controller, in addition to any other functionality your design may require.
+
+    // different wires to connect the output and inputs of different modules together
 	wire game_tick_wire;
 	wire game_pulse_wire;
 	wire advance_frame_wire;
 	wire pulse_early_wire;
-   wire user_input_clock_wire;
 	wire [8:0]pipe_one_x_wire;
 	wire [6:0]pipe_one_y_wire;
 	wire [8:0]pipe_two_x_wire;
 	wire [6:0]pipe_two_y_wire;
 	wire [8:0]pipe_three_x_wire;
 	wire [6:0]pipe_three_y_wire;
-   wire [6:0]box_y_wire;
+    wire [6:0]box_y_wire;
     wire collided_wire;
     wire [3:0] current_time_wire;
 
+    // a special clock used to give the different clock cycles to the necessary modules
 	 game_clock gc(
 			.CLOCK_50(CLOCK_50),
 			.NEW_CLOCK(game_tick_wire),
 			.NEW_CLOCK_EARLY(game_pulse_wire),
 			.NEW_PULSE_EARLY(pulse_early_wire)
-);
+            );
+
+    // the module for the first pipe, it outputs the x and y coordinates to the painter module so it can be drawn
 	 pipe_register pr1(
 			.key_press(~KEY[0]),
 			.CLOCK_50(CLOCK_50),
@@ -99,6 +105,7 @@ module FloppyBox(
 			.collided(collided_wire)
 			);
 
+    // the module for the second pipe, it is 100 pixel behind the first pipe
 	 pipe_register pr2(
 			.key_press(~KEY[0]),
 			.CLOCK_50(CLOCK_50),
@@ -110,6 +117,7 @@ module FloppyBox(
 			.collided(collided_wire)
 			);
 			
+    // the module for the third pipe, it is 100 pixel behind the second pipe
 	 pipe_register pr3(
 			.key_press(~KEY[0]),
 			.CLOCK_50(CLOCK_50),
@@ -121,19 +129,23 @@ module FloppyBox(
 			.collided(collided_wire)
 			);
 
+    // the clock is used to send signals to the time_counter module to see if a second has passed or not
     clock time_last(
         .CLOCK_50(CLOCK_50),
         .clk_speed(3'd1),
         .current_number(current_time_wire)
         );
 
+    // the box module, used to send its height to the painter module so it can be painted, the key0 can make it go up
     box_register box_reg(
         .game_clk(game_tick_wire), //advance_frame_wire
-        .user_input_clock(~(KEY[0])), // user_input_clock_wire
+        .user_input(~(KEY[0])), 
         .y_coordinate(box_y_wire),
 		  .collided(collided_wire)
         );
 
+    // the counter used to display how many seconds the player has lasted, it is also the score of the game
+    // this is displayed on the 7 segment display on the board
     time_counter current_time(
         .binary_time(current_time_wire),
 		  .CLOCK_50(CLOCK_50),
@@ -143,6 +155,7 @@ module FloppyBox(
 		  .collided(collided_wire)
         );
 
+    // it takes in the coordinate of the pipes and box and checks if it has collided so the game can stop
     collision_detector collision(
         .box_y(box_y_wire),
         .CLOCK_50(CLOCK_50),
@@ -156,6 +169,7 @@ module FloppyBox(
         .collided(collided_wire)
         );
 
+    // it help sends the different x and y coordinates as well as color to the vga so the vga can draw it on the screen
 	painter p(
         .CLOCK_50(CLOCK_50),
         .game_pulse(pulse_early_wire), //game_pulse_wire
@@ -175,85 +189,3 @@ module FloppyBox(
         .game_tick_after_erase(advance_frame_wire)
 	    );
 endmodule
-
-			
-
-/*
-module box_state(
-	input press;
-	input clk;
-	output y;
-	
-	localparam START_FLYING = 3'd0,
-		IS_FLYING = 3'd1,
-		START_FALLING = 3'd2,
-		IS_FALLING = 3'd3;
-
-	always@(*)
-	begin: state_table
-		case (current_state)
-			FALLING: next_state = press ? FLYING : FALLING;
-			FLYING: next_state = done_flying ? FALLING : FLYING;
-
-
-endmodule
-*/
-
-
-/*
-module pipe_coordinate_register(
-	input load_x,
-	input load_y);
-	reg is_empty;
-	reg x_coordinate;
-	reg y_coordinate;
-	always@(*)
-	if(load_x
-	always@(game_tick_pulse)
-	if(x_coordinate == 0)
-		is_empty <= 1;
-	if(x_coordinate != 0)
-		x_coordinate <= x_coordinate - 1;
-
-endmodule
-*/
-
-/*
-module RateDivider(clk, rate, current_rate);
-	input clk;
-	input[28:0] rate;
-	output[28:0] current_rate;
-	reg[28:0] out= 0;
-	assign current_rate = out;
-	
-	always @(posedge clk)
-	begin
-		if(out == 0)
-			out <= rate;
-		else
-			out <= out - 1'b1;
-	end
-
-endmodule
-*/
-
-/*
-module pos_edge_pulser(// Converts a continuous "on" signal, to a short "on" pulse 
-    input in, // Continuous signal
-    output pulse // Single pulse
-    );
-    reg current_signal;
-    reg input_pulse_wire;
-    assign input_pulse = input_pulse_wire;
-    always@(*)
-    begin
-        if(current_signal == 1'b0 && in == 1'b1)
-            input_pulse_wire <= 1'b1;
-        else
-            input_pulse_wire <= 1'b0;
-        current_signal <= in;
-    end
-endmodule
-*/
-   
-        
