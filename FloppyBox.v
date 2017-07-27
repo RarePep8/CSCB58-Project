@@ -133,7 +133,9 @@ module FloppyBox(
     clock time_last(
         .CLOCK_50(CLOCK_50),
         .clk_speed(3'd1),
-        .current_number(current_time_wire)
+        .current_number(current_time_wire),
+        .collided(collided_wire),
+        .key_press(~KEY[3])
         );
 
     // the box module, used to send its height to the painter module so it can be painted, the key0 can make it go up
@@ -148,11 +150,12 @@ module FloppyBox(
     // this is displayed on the 7 segment display on the board
     time_counter current_time(
         .binary_time(current_time_wire),
-		  .CLOCK_50(CLOCK_50),
+        .CLOCK_50(CLOCK_50),
         .hex_0(HEX0),
         .hex_1(HEX1),
         .hex_2(HEX2),
-		  .collided(collided_wire)
+        .collided(collided_wire),
+        .key_press(~KEY[3])
         );
 
     // it takes in the coordinate of the pipes and box and checks if it has collided so the game can stop

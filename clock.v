@@ -1,8 +1,10 @@
-module clock(CLOCK_50, clk_speed, current_number);
+module clock(CLOCK_50, clk_speed, current_number, collided, key_press);
     
     // a clock that allows the user to choose the how many clocks cycle to send a signal
 	input CLOCK_50; // the base clock, ticks once every 1/50 million seconds
 	input[2:0] clk_speed; // the input to choose the clock speed
+    input collided; // if the pipe and box has collided then stop the clock
+    input key_press; // the key to reset the clock back to 0 
 	output [3:0] current_number; // it outputs how many ticks it has counted
 	
     // use a register to store the number of ticks and output it
@@ -76,11 +78,12 @@ module clock(CLOCK_50, clk_speed, current_number);
 	end
 
     // once the clock ticks once, the output goes up by one
+    // if box and pipe has collided then stop the clock
 	always@(posedge CLOCK_50)
 	begin
-		if(q == 4'd10)
+		if(q == 4'd10 || key_press == 1'b1)
 			q <= 0;
-		else if(Enable == 1'b1)
+		else if(Enable == 1'b1 && ~collided)
 			q <= q + 1'b1;
 	end
 endmodule

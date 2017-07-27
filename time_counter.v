@@ -1,9 +1,10 @@
-module time_counter(binary_time, CLOCK_50, hex_0, hex_1, hex_2, collided);
+module time_counter(binary_time, CLOCK_50, hex_0, hex_1, hex_2, collided, key_press);
     // a counter used to display the amount of time the player have lasted through the 7 segment display
 
     input [3:0] binary_time;
 	input CLOCK_50;
-	input collided;
+	input collided; // stops the counter if its collided
+    input key_press; // the key to reset the counter
     output [6:0] hex_0;
     output [6:0] hex_1;
     output [6:0] hex_2;
@@ -29,13 +30,11 @@ module time_counter(binary_time, CLOCK_50, hex_0, hex_1, hex_2, collided);
         .segments(hex_2)
         );
 
-//	always @(collided)
-//		in_game <= ~in_game;
-
     // increase the values of digit 2 and digit 3 whenever the value before it reaches 10
+    // if pipe and box has collided then set all digits to 0
     always @(posedge CLOCK_50)
         begin
-		  if(in_game) begin
+		  if(~collided) begin
 			  if (binary_time == 4'd10)
 					digit2 <= digit2 + 1'b1;
 			  if (digit2 == 4'd10)
@@ -46,7 +45,7 @@ module time_counter(binary_time, CLOCK_50, hex_0, hex_1, hex_2, collided);
 				if (digit3 == 4'd10)
 					digit3 <= 4'b0;
 				end
-			else begin
+			else if (key_press) begin
 				digit2 <= 4'd0;
 				digit3 <= 4'd0;
 				end
