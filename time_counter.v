@@ -45,7 +45,7 @@ module time_counter(binary_time, CLOCK_50, hex_0, hex_1, hex_2, collided, key_pr
 				if (digit3 == 4'd10)
 					digit3 <= 4'b0;
 				end
-			else if (key_press) begin
+			if (key_press) begin
 				digit2 <= 4'd0;
 				digit3 <= 4'd0;
 				end
