@@ -90,7 +90,8 @@ module FloppyBox(
 			.CLOCK_50(CLOCK_50),
 			.NEW_CLOCK(game_tick_wire),
 			.NEW_CLOCK_EARLY(game_pulse_wire),
-			.NEW_PULSE_EARLY(pulse_early_wire)
+			.NEW_PULSE_EARLY(pulse_early_wire),
+			.key_press(~KEY[3])
             );
 
     // the module for the first pipe, it outputs the x and y coordinates to the painter module so it can be drawn
@@ -102,7 +103,7 @@ module FloppyBox(
 			.game_clk(advance_frame_wire),//advance_frame_wire
 			.x(pipe_one_x_wire),
 			.y(pipe_one_y_wire),
-			.collided(collided_wire)
+			.reset(collided_wire)
 			);
 
     // the module for the second pipe, it is 100 pixel behind the first pipe
@@ -114,7 +115,7 @@ module FloppyBox(
 			.game_clk(advance_frame_wire),//advance_frame_wire
 			.x(pipe_two_x_wire),
 			.y(pipe_two_y_wire),
-			.collided(collided_wire)
+			.reset(collided_wire)
 			);
 			
     // the module for the third pipe, it is 100 pixel behind the second pipe
@@ -126,7 +127,7 @@ module FloppyBox(
 			.game_clk(advance_frame_wire),//advance_frame_wire
 			.x(pipe_three_x_wire),
 			.y(pipe_three_y_wire),
-			.collided(collided_wire)
+			.reset(collided_wire)
 			);
 
     // the clock is used to send signals to the time_counter module to see if a second has passed or not

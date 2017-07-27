@@ -1,4 +1,4 @@
-module pipe_register(CLOCK_50, key_press, starting_x, starting_y, game_clk, x, y, collided);
+module pipe_register(CLOCK_50, key_press, starting_x, starting_y, game_clk, x, y, collided, reset);
     input key_press;
     input CLOCK_50;
     input [8:0] starting_x;
@@ -6,6 +6,7 @@ module pipe_register(CLOCK_50, key_press, starting_x, starting_y, game_clk, x, y
     input game_clk;
     output [8:0] x;
     output [6:0] y;
+	 input reset;
 	 input collided;
 
     // height of the opening is 30 pixels, its y coordinate is the top of the opening
@@ -41,7 +42,7 @@ module pipe_register(CLOCK_50, key_press, starting_x, starting_y, game_clk, x, y
     // move the pipe by 1
     always @(posedge game_clk)
     begin
-	     if (initialize || collided) begin // if its in the state of initializing or resetting the game, then reset the coordinate of the pipe and its opening
+	     if (initialize || reset) begin // if its in the state of initializing or resetting the game, then reset the coordinate of the pipe and its opening
             initialize <= 1'b0;
 				curr_x[8:0] <= starting_x[8:0];
             curr_y[6:0] <= starting_y[6:0];
