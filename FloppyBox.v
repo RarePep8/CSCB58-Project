@@ -71,10 +71,8 @@ module FloppyBox(
 	// for the VGA controller, in addition to any other functionality your design may require.
 
     // different wires to connect the output and inputs of different modules together
-	wire game_tick_wire;
-	wire game_pulse_wire;
 	wire advance_frame_wire;
-	wire pulse_early_wire;
+	wire pulse_wire;
 	wire [8:0]pipe_one_x_wire;
 	wire [6:0]pipe_one_y_wire;
 	wire [8:0]pipe_two_x_wire;
@@ -88,9 +86,7 @@ module FloppyBox(
     // a special clock used to give the different clock cycles to the necessary modules
 	 game_clock gc(
 			.CLOCK_50(CLOCK_50),
-			.NEW_CLOCK(game_tick_wire),
-			.NEW_CLOCK_EARLY(game_pulse_wire),
-			.NEW_PULSE_EARLY(pulse_early_wire),
+			.NEW_PULSE(pulse_wire),
 			.key_press(~KEY[3])
             );
 
@@ -141,7 +137,7 @@ module FloppyBox(
 
     // the box module, used to send its height to the painter module so it can be painted, the key0 can make it go up
     box_register box_reg(
-        .game_clk(game_tick_wire), //advance_frame_wire
+        .game_clk(advance_frame_wire),
         .user_input(~(KEY[0])), 
         .y_coordinate(box_y_wire),
 		  .collided(collided_wire)
@@ -176,7 +172,7 @@ module FloppyBox(
     // it help sends the different x and y coordinates as well as color to the vga so the vga can draw it on the screen
 	painter p(
         .CLOCK_50(CLOCK_50),
-        .game_pulse(pulse_early_wire), //game_pulse_wire
+        .game_pulse(pulse_early_wire),
         .box_y(box_y_wire),
         .pipe_one_x(pipe_one_x_wire),
         .pipe_one_y(pipe_one_y_wire),
