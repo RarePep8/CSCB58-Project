@@ -4,10 +4,10 @@ module painter(
     input [6:0]box_y,
     input [8:0]pipe_one_x,
     input [6:0]pipe_one_y,
-	 input [8:0]pipe_two_x,
-	 input [6:0]pipe_two_y,
-	 input [8:0]pipe_three_x,
-	 input [8:0]pipe_three_y,
+    input [8:0]pipe_two_x,
+    input [6:0]pipe_two_y,
+    input [8:0]pipe_three_x,
+    input [8:0]pipe_three_y,
     input collided,
     input key_press,
     output plot,
@@ -40,33 +40,33 @@ module painter(
     // assign different states of the finite state machine to a number
     // as well as assign the different non-changing binary bits to a variable
     // such as 3'b000 to the variable BLACK, making it easier to set the color to black
-    localparam  DRAW_BOX_1          = 9'd0,
-                DRAW_BOX_2          = 9'd1,
-                DRAW_BOX_3          = 9'd2,
-                DRAW_BOX_4          = 9'd3,
-                DRAW_BOX_5          = 9'd4,
-                DRAW_BOX_6          = 9'd5,
-                DRAW_BOX_7          = 9'd6,
-                DRAW_BOX_8          = 9'd7,
-                DRAW_BOX_9          = 9'd8,
-					 DRAW_BOX_PREPARE 	= 9'd9,
-					 DRAW_BOX				= 9'd10,
-					 DRAW_PIPE_ONE_LINE_PREPARE = 9'd11,
-                DRAW_PIPE_ONE_LINE  = 9'd12,
-                DRAW_PIPE_TWO_LINE_PREPARE   = 9'd13,
-					 DRAW_PIPE_TWO_LINE			= 9'd14,
-					 DRAW_PIPE_THREE_LINE_PREPARE = 9'd15,
-					 DRAW_PIPE_THREE_LINE = 9'd16,
-					 WAIT_DRAW				= 9'd17,
-					 WAIT_ERASE				= 9'd18,
-					 ERASE_PIPE_LINE     = 9'd19,
-					 DONE_ERASE				= 9'd20,
-                WAIT                = 9'd21,
-                START_SCREEN        = 9'd22,
-                GREEN               = 3'b010,
-                BLACK               = 3'b000,
-					 RED						= 3'b100,
-					 PIPE_GAP_LENGTH		= 7'd30;
+    localparam  DRAW_BOX_1          			= 9'd0,
+                DRAW_BOX_2          			= 9'd1,
+                DRAW_BOX_3          			= 9'd2,
+                DRAW_BOX_4          			= 9'd3,
+                DRAW_BOX_5         			= 9'd4,
+                DRAW_BOX_6          			= 9'd5,
+                DRAW_BOX_7          			= 9'd6,
+                DRAW_BOX_8         			= 9'd7,
+                DRAW_BOX_9          			= 9'd8,
+		DRAW_BOX_PREPARE 			= 9'd9,
+		DRAW_BOX				= 9'd10,
+		DRAW_PIPE_ONE_LINE_PREPARE 		= 9'd11,
+                DRAW_PIPE_ONE_LINE  			= 9'd12,
+                DRAW_PIPE_TWO_LINE_PREPARE   		= 9'd13,
+		DRAW_PIPE_TWO_LINE			= 9'd14,
+		DRAW_PIPE_THREE_LINE_PREPARE 		= 9'd15,
+		DRAW_PIPE_THREE_LINE 			= 9'd16,
+		WAIT_DRAW				= 9'd17,
+		WAIT_ERASE				= 9'd18,
+		ERASE_PIPE_LINE     			= 9'd19,
+		DONE_ERASE				= 9'd20,
+                WAIT                			= 9'd21,
+                START_SCREEN       			= 9'd22,
+                GREEN               			= 3'b010,
+                BLACK               			= 3'b000,
+		RED		    			= 3'b100,
+		PIPE_GAP_LENGTH				= 7'd30;
 	 reg [6:0] seven_bit_counter =7'd30;
 
     // the finite state machine table, the condition required for different states to go to the next one
@@ -136,18 +136,17 @@ module painter(
 					x_reg[8:0] <= pipe_one_x[8:0]; // x coord
 					temp_y_reg[6:0] <= pipe_one_y[6:0]; // y coord
 					colour_reg <= GREEN; // color of the pipe
-               if(is_erase) // set color to black if it is time to erase
-                   colour_reg <= BLACK;
-					end
-
-            DRAW_PIPE_ONE_LINE: begin // send the individual bits to the vga to be drawn on the screen, loop in this state until the pipe is drawn
-					plot_reg <= 1'b1; // enable plotting
-                seven_bit_counter <= seven_bit_counter + 1'b1; // increase the counter by 1 so it will draw on the pixel below the current one
-					 if(seven_bit_counter > 7'b1111111) begin
-						seven_bit_counter <= 7'b0;
+               				if(is_erase) // set color to black if it is time to erase
+                   				colour_reg <= BLACK;
 						end
-                y_reg[6:0] <= temp_y_reg[6:0] + seven_bit_counter[6:0]; // add the old y coord and the counter to get the new y coord
-                end
+
+            			DRAW_PIPE_ONE_LINE: begin // send the individual bits to the vga to be drawn on the screen, loop in this state until the pipe is drawn
+					plot_reg <= 1'b1; // enable plotting
+                			seven_bit_counter <= seven_bit_counter + 1'b1; // increase the counter by 1 so it will draw on the pixel below the current one
+					if(seven_bit_counter > 7'b1111111)
+						seven_bit_counter <= 7'b0;
+                			y_reg[6:0] <= temp_y_reg[6:0] + seven_bit_counter[6:0]; // add the old y coord and the counter to get the new y coord
+                			end
 
 				DRAW_PIPE_TWO_LINE_PREPARE: begin // prepare the parameters to draw pipe 2, same as the pipe 1 prepare 
 					plot_reg <= 1'b0;
@@ -155,18 +154,18 @@ module painter(
 					x_reg[8:0] <= pipe_two_x[8:0];
 					temp_y_reg[6:0] <= pipe_two_y[6:0];
 					colour_reg <= GREEN;
-               if(is_erase)
-                   colour_reg <= BLACK;
-					end
+               				if(is_erase)
+                   				colour_reg <= BLACK;
+						end
 
 				DRAW_PIPE_TWO_LINE: begin // send the info out to the vga to draw the pipe 2, same as the pipe 1 
 					plot_reg <= 1'b1;
-                seven_bit_counter <= seven_bit_counter + 1'b1;
+                			seven_bit_counter <= seven_bit_counter + 1'b1;
 					 if(seven_bit_counter > 7'b1111111) begin
 						seven_bit_counter <= 7'b0;
 						end
-                y_reg[6:0] <= temp_y_reg[6:0] + seven_bit_counter[6:0];
-                end
+                			y_reg[6:0] <= temp_y_reg[6:0] + seven_bit_counter[6:0];
+                			end
 
 				DRAW_PIPE_THREE_LINE_PREPARE: begin // prepare the parameter to draw pipe 3, same as pipe 1 prepare
 					plot_reg <= 1'b0;
@@ -174,18 +173,17 @@ module painter(
 					x_reg[8:0] <= pipe_three_x[8:0];
 					temp_y_reg[6:0] <= pipe_three_y[6:0];
 					colour_reg <= GREEN;
-               if(is_erase)
-                   colour_reg <= BLACK;
-					end
+               				if(is_erase)
+                   				colour_reg <= BLACK;
+						end
 
 				DRAW_PIPE_THREE_LINE: begin // send the info to the vga to draw pipe3, same as pipe1
 					plot_reg <= 1'b1;
-                seven_bit_counter <= seven_bit_counter + 1'b1;
-					 if(seven_bit_counter > 7'b1111111) begin
+                			seven_bit_counter <= seven_bit_counter + 1'b1;
+					 if(seven_bit_counter > 7'b1111111)
 						seven_bit_counter <= 7'b0;
-						end
-                y_reg[6:0] <= temp_y_reg[6:0] + seven_bit_counter[6:0];
-                end
+                			y_reg[6:0] <= temp_y_reg[6:0] + seven_bit_counter[6:0];
+                			end
 
 				START_SCREEN: // the start screen state
 						game_tick_after_erase_reg <= ~game_tick_after_erase_reg; // it sets the game tick signal to the opposite signal
@@ -198,7 +196,7 @@ module painter(
 
 				WAIT_ERASE: begin // set the seven bit counter and the is erase variable for erasing
 						seven_bit_counter <= 7'd30;
-                      is_erase <= 1'b1;
+                      				is_erase <= 1'b1;
 						end
 
            // default:    
