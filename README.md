@@ -3,6 +3,8 @@
 
 Hey guys how's it going, David's bros here!
 
+Note: You may need to change some settings on the physical monitor for the game to be in fullscreen
+
 Project Details
 ---------------
 Project Title: FloppyBox 
