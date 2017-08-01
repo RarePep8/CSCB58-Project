@@ -1,5 +1,5 @@
 # Floppy Box
-(Alex Wong, Brian Yang, Toa Qiu, Tianyu Luo)
+(Alex Wong, Jiale Yang, Tao Qiu, Tianyu Luo)
 
 Hey guys how's it going, David's bros here!
 
@@ -60,3 +60,5 @@ Week 1: We adjusted the verilog code for lab6(vga) in order to display pixels th
 Week 2: We implemented the flying and falling state of the character, but we can’t tell if it works properly since the drawing module has issues drawing with changing x and y values. We also created and tested the pipe register which holds the x and y value of a pipe, suprisingly the drawing module works properly for the pipes. We started adding the erase states for the drawing module to erase it’s current frame before drawing the next, but we ran into timing issues where the pipe moves asynchronous to the speed of frames being drawn. Our plan next week is to change the pipe to move only after the drawing modules finishes drawing each frame. We also hope to rework our character module.
 
 Week 3: Due to the short amount of time remaining, we decided to simplify some features of the game. For example, the character flies at a constant speed when the player holds the button instead of flying with gravity when the player taps the button. We also scrapped the scoreboard feature since the main component of the game still needs work. During our time in the lab, we successfully debugged the problems with the painter module, which let us draw as if the character and the pipes are moving. We then added a collision detection module along with reset signals for the character and pipe registers. Overall, we made a lot of progress thanks to the extra lab time.
+
+Week 4: During this week , we finished working on the score counter which increases by 1 every second that the player is still alive, and it resets when the player starts the game again. After the game was finished, we cleaned up the verilog files and deleted any unused modules.
